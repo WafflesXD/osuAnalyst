@@ -1,10 +1,14 @@
 import os
 import glob
 
-home_directory = os.path.expanduser('~') # Makes a path to C:/Users/HomeUser
-path = os.path.join(home_directory, 'AppData', 'Local', 'osu!', 'Replays') # Appends path to osu Replays folder
-os.chdir(path) 
+homeDir = os.path.expanduser("~")  # Makes a path to C:/Users/HomeUser
+path = os.path.join(homeDir, "AppData/Local/osu!/Replays/")
+os.chdir(path)
 print(path)
-list_of_files = glob.glob(path+"/*.osr") # Makes a list of all files within path
-latest_file = max(list_of_files, key=os.path.getctime, default=0) # Looks through list_of_files and finds file with smallest
-print(latest_file)
+
+listOfFiles = glob.glob(path + "/*.osr")  # Makes a list of all files with .osr
+newestFile = max(listOfFiles, key=os.path.getctime, default=0)
+print(newestFile)  # ^Finds file with newest metadata change
+
+with open(newestFile, "rb") as replay:  # Opens replay file
+    print(replay.read())  # DOESNT WORK CANT READ AS BINARY
