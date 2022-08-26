@@ -1,21 +1,28 @@
 import os
 import glob
+from tkinter.filedialog import askdirectory
 
-homeDir = os.path.expanduser("~")  # Makes a path to C:/Users/HomeUser
-try:
-    path = os.path.join(homeDir, "AppData/Local/osu!/Replays/")
-except FileNotFoundError:
-    print()
-    # path = os.path.join(homeDir, "AppData/Roaming/osu!/Replays/")
-    # Replace to allow users to select their own directory
-else:
-    print("Successfully entered osu! replays directory")
-os.chdir(path)
-print(path)
 
-listOfFiles = glob.glob(path + "/*.osr")  # Makes a list of all files with .osr
-newestFile = max(listOfFiles, key=os.path.getctime, default=0)
-print(newestFile)  # ^Finds file with newest metadata change
+def main():  # Python scripts instead of package
+    homeDir = os.path.expanduser("~")  # Makes a path to C:/Users/HomeUser
+    try:
+        path = os.path.join(homeDir, "AppData/Local/osu!/Replays/")
+        os.chdir(path)
+    except FileNotFoundError:
+        path = askdirectory(title='Select osu! Replay Folder')
+        os.chdir(path)
+    else:
+        print("Successfully entered osu! replays directory")
+    # Couldnt have os.chdir outside the try except
+    print(path)
 
-with open(newestFile, "rb") as replay:  # Opens replay file
-    print(replay.read())  # DOESNT WORK CANT READ AS BINARY
+    listOfFiles = glob.glob(path + "/*.osr")  # All files with .osr
+    newestFile = max(listOfFiles, key=os.path.getctime, default=0)
+    print(newestFile)  # ^Finds file with newest metadata change
+
+    with open(newestFile, "rb") as replay:  # Opens replay file
+        print(replay.read())  # DOESNT WORK CANT READ AS BINARY
+
+
+if __name__ == "__main__":
+    main()
