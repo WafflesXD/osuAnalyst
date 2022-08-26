@@ -2,7 +2,10 @@ import os
 import glob
 
 homeDir = os.path.expanduser("~")  # Makes a path to C:/Users/HomeUser
-path = os.path.join(homeDir, "AppData/Local/osu!/Replays/")
+try:
+    path = os.path.join(homeDir, "AppData/Local/osu!/Replays/")
+except FileNotFoundError:
+    path = os.path.join(homeDir, "AppData/Roaming/osu!/Replays/")
 os.chdir(path)
 print(path)
 
