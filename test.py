@@ -5,7 +5,11 @@ homeDir = os.path.expanduser("~")  # Makes a path to C:/Users/HomeUser
 try:
     path = os.path.join(homeDir, "AppData/Local/osu!/Replays/")
 except FileNotFoundError:
-    path = os.path.join(homeDir, "AppData/Roaming/osu!/Replays/")
+    print()
+    # path = os.path.join(homeDir, "AppData/Roaming/osu!/Replays/")
+    # Replace to allow users to select their own directory
+else:
+    print("Successfully entered osu! replays directory")
 os.chdir(path)
 print(path)
 
