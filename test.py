@@ -9,30 +9,35 @@ def main():  # Python scripts instead of package
     try:
         path = os.path.join(homeDir, "AppData/Local/osu!/")
         os.chdir(path)
-    except FileNotFoundError:
+    except FileNotFoundError:  # If file not found then ask user to select
         path = ad(title='Select osu! Folder')
         os.chdir(path)
     else:
         print("Successfully entered osu! replays directory")
-    # Couldnt have os.chdir outside the try except
-    print(path)
 
     listOfFiles = glob.glob(path + "Replays/*.osr")  # All files with .osr
     newestFile = max(listOfFiles, key=os.path.getctime, default=0)
-    print(newestFile)  # ^Finds file with newest metadata change
+    # ^Finds file with newest metadata change
+    songName = os.path.basename(newestFile)
+    userName = songName.split(' ')[0]
+    # Gets username from first part, using split, of replay file name
 
     with open(newestFile, "rb") as replay:  # Opens replay file
-        byte_data = replay.read()  # Conceptual reading of .osr
-        unpacked = struct.unpack_from('h', byte_data, 101)
+        r = replay.read()
+        unpacked1 = struct.unpack_from('<bi', r, 0)
+        unpacked = struct.unpack_from('<hhhhhhihbi', r, 75 + len(userName))
         """
-        Byte offset # for Version @ 1 (i)
+        Byte offset # for version number @ 1 (i)
         Byte offset # for 300's @ 85 then + 2 for next data point (h)
+            reference for ^^ @
+            https://osu.ppy.sh/wiki/en/Client/File_formats/Osr_%28file_format%29
         Byte offset # for Total score @ 97 (i)
         Byte offset # for Max Combo @ 101 (h)
         Byte offset # for mods used @ 104 (i)
-            refrence table for ^^ @ https://github.com/ppy/osu-api/wiki#mods
+            reference table for ^^ @ https://github.com/ppy/osu-api/wiki#mods
         Ill keep going after!
         """
+        print(unpacked1)
         print(unpacked)  # Read from binary, the game version for replay
 
 
