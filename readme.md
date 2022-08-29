@@ -1,3 +1,5 @@
-<h1 align="center">Osu Analyst</h1>
+<h1 align="center">OsuAnalyst</h1>
 </p
 ---
+
+## Features
