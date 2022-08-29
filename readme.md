@@ -2,4 +2,4 @@
 </p
 ---
 
-<font size=1> Features</font>
+**Features**
