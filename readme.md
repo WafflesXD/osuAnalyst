@@ -1,2 +1,3 @@
-### Osu Analyst
+<p align="center">
+# Osu Analyst
 ---
