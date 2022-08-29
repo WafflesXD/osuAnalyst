@@ -19,13 +19,14 @@ def main():  # Python scripts instead of package
     newestFile = max(listOfFiles, key=os.path.getctime, default=0)
     # ^Finds file with newest metadata change
     songName = os.path.basename(newestFile)
-    userName = songName.split(' ')[0]
-    # Gets username from first part, using split, of replay file name
+    userName = songName.partition(' ')[0]
+    # Gets username from first part, using partition, of replay file name
 
     with open(newestFile, "rb") as replay:  # Opens replay file
         r = replay.read()
-        unpacked1 = struct.unpack_from('<bi', r, 0)
-        unpacked = struct.unpack_from('<hhhhhhihbi', r, 75 + len(userName))
+        unpacked = struct.unpack_from('<bi', r, 0)  # Gamemode & version
+        unpacked1 = struct.unpack_from('<hhhhhhihbi', r, 75 + len(userName))
+        print(str(r).split("|")[71])  # Use for loop to create table for graph
         """
         Byte offset # for version number @ 1 (i)
         Byte offset # for 300's @ 85 then + 2 for next data point (h)
@@ -35,10 +36,9 @@ def main():  # Python scripts instead of package
         Byte offset # for Max Combo @ 101 (h)
         Byte offset # for mods used @ 104 (i)
             reference table for ^^ @ https://github.com/ppy/osu-api/wiki#mods
-        Ill keep going after!
         """
-        print(unpacked1)
-        print(unpacked)  # Read from binary, the game version for replay
+        print(unpacked)
+        print(unpacked1)  # Read from binary, the game version for replay
 
 
 if __name__ == "__main__":
