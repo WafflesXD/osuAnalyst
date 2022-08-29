@@ -24,8 +24,8 @@ def main():  # Python scripts instead of package
 
     with open(newestFile, "rb") as replay:  # Opens replay file
         r = replay.read()
-        unpacked = struct.unpack_from('<bi', r, 0)  # Gamemode & version
-        unpacked1 = struct.unpack_from('<hhhhhhihbi', r, 75 + len(userName))
+        unpacked = struct.unpack_from("<bi", r, 0)  # Gamemode & version
+        unpacked1 = struct.unpack_from("<hhhhhhihbi", r, 75 + len(userName))
         """
         Byte offset # for version number @ 1 (i)
         Byte offset # for 300's @ 85 then + 2 for next data point (h)
@@ -36,14 +36,25 @@ def main():  # Python scripts instead of package
         Byte offset # for mods used @ 104 (i)
             reference table for ^^ @ https://github.com/ppy/osu-api/wiki#mods
         """
-        graphList = [[0], [0]]
         print(unpacked)
         print(unpacked1)  # Read from binary, the game version for replay
+        graphList = [[0, 1.0]]
         for x in str(r).split("|"):
             if "," and "x" not in x:  # Makes a table for health vs. time
-                graph = float(x.partition(",")[0]), int(x.partition(",")[2])
-                graphList.append([graph[0], graph[1]])
+                try:
+                    g = float(x.partition(",")[0]), int(x.partition(",")[2])
+                    graphList.append([g[1], g[0]])
+                except ValueError:
+                    pass
         [print(i) for i in graphList]
+        hexUntilHealth = r.hex().split("7c302c")[1]
+        hexHealth = hexUntilHealth[:2]
+        endCheck = isinstance(bytes.fromhex(hexHealth).decode('utf-8'), int)
+        if not endCheck:
+            offsetAfterHealth = len(r.hex().split("7c302c")[0]) / 2 + 3
+            print(offsetAfterHealth)
+            unpacked2 = struct.unpack_from("<Q", r, int(offsetAfterHealth))
+            print(unpacked2)
 
 
 if __name__ == "__main__":
