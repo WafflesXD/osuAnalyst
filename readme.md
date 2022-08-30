@@ -6,5 +6,4 @@ Still in development
 
 ---
 ### **Features**
-</br>
 - Detects overaim/underaim
