@@ -7,3 +7,9 @@ Still in development
 ---
 ### **Features**
 - Detects overaim/underaim
+- Cursor analysis
+- Hit error
+- Song selection
+
+---
+### Download
