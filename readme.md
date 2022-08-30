@@ -1,1 +1,8 @@
-# Im working on it, Tito is actually a contributor, as well as Jose 
+<h1 align="center">OsuAnalyst</h1>
+</p
+---
+
+Still in development
+
+---
+### **Features**
