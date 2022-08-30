@@ -7,4 +7,4 @@ Still in development
 ---
 ### **Features**
 </br>
-dege
+- Detects overaim/underaim
