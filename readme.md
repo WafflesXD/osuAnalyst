@@ -13,4 +13,5 @@ Still in development
 
 ---
 ### Download
-No official downloadable version of OsuAnalyst is out yet.
+No official downloadable version of OsuAnalyst is out yet
+
