@@ -28,9 +28,10 @@ def main():  # Python scripts instead of package
         r = replay.read()
 
         graphList = [[1.0, 0]]
-        hexOffset = len(r.hex().split("7c")[0]) / 2  # offset before health
+        hexOffset = len(r.hex().split("7c3")[0]) / 2  # offset before health
+        # Handles other "|" before health data
         for i in r.hex().split("7c"):
-            if "2c" or "302e" in i:  # Check if either "1," or "0.,"
+            if "2c" or "302e3" in i:  # Check if "1," or "0.,integer"
                 try:
                     h = bytes.fromhex(i.partition("2c")[0]).decode("utf-8")
                     t = bytes.fromhex(i.partition("2c")[2]).decode("utf-8")
@@ -48,7 +49,11 @@ def main():  # Python scripts instead of package
         scoreData = unpack_from("<hhhhhhihbi", r, 75 + len(userName))
         print(scoreData)  # 300 100 50 Gekis Katus Misses Score Combo FC Mods
 
-        if not (hexOffset - int(hexOffset)) == 0:  # Check for health data
+        healthDataCheck = (hexOffset - int(hexOffset)) == 0
+        # Handles no life bar data
+        healthDataCheck1 = (hexOffset - 3) == len(r.hex()) / 2
+        # Handles no life bar or posData
+        if not healthDataCheck or healthDataCheck1:  # Check for health data
             hexOffset = 77 + len(userName) + calcsize("<hhhhhhihbi")
 
         miscData = unpack_from("<qi", r, int(hexOffset))
@@ -57,19 +62,22 @@ def main():  # Python scripts instead of package
         hexOffset += calcsize("<qi")
         onlineScoreID = unpack_from("<q", r, int(hexOffset) + miscData[1])
         print(onlineScoreID)  # Online score ID
+        # Returns 0 if not completed or not played online
 
-        posData = r[int(hexOffset): int(hexOffset) + miscData[1]]
-        posData = decompress(posData, format=FORMAT_AUTO)
-        posData = posData.decode("ascii")  # Pulls mouse + key data
-        posDataList = [[None, None, None, None]]
-        for i in islice(posData.split(","), 0, len(posData.split(",")) - 1):
-            timeFromLastEvent = i.split("|")[0]
-            xPos = i.split("|")[1]
-            yPos = i.split("|")[2]
-            keyCombo = i.split("|")[3]
-            posDataList.append([timeFromLastEvent, xPos, yPos, keyCombo])
-        # [print(i) for i in posDataList]  # Organized posData into list
-        # print(mouseData)
+        if not healthDataCheck or not healthDataCheck1:
+            posData = r[int(hexOffset): int(hexOffset) + miscData[1]]
+            posData = decompress(posData, format=FORMAT_AUTO)
+            posData = posData.decode("ascii")  # Pulls mouse + key data
+            posDataList = [[None, None, None, None]]
+            posDataRange = len(posData.split(",")) - 1
+            for i in islice(posData.split(","), 0, posDataRange):
+                timeFromLastEvent = int(i.split("|")[0])
+                xPos = float(i.split("|")[1])
+                yPos = float(i.split("|")[2])
+                keyCombo = int(i.split("|")[3])
+                posDataList.append([timeFromLastEvent, xPos, yPos, keyCombo])
+            # [print(i) for i in posDataList]  # Organized posData into list
+            # print(mouseData)
 
 
 if __name__ == "__main__":
