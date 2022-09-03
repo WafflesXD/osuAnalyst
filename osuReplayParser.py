@@ -56,8 +56,19 @@ class Replay:
                 268435456: "Key2",
                 536870912: "ScoreV2",
                 1073741824: "Mirror"}
+    keysDict = {0: "No Keys Pressed",
+                1: "M1 Pressed",
+                2: "M2 Pressed",
+                4: "K1 Pressed",
+                5: "K1/M1 Pressed",
+                8: "K2 Pressed",
+                10: "K2/M2 Pressed",
+                15: "K1/M1 and K2/M2 Pressed",
+                16: "Smoke Pressed"}
     hexOffset = None
+    lastHealthOffset = None
     replayLength = None
+    rngSeed = None
 
     def __init__(self, replayDir):
         self.replayDir = replayDir
@@ -70,7 +81,7 @@ class Replay:
         self.lifeBarData = self.getLifeBarData()
 
         dataSize = len(self.replay.hex()) / 2
-        posDataCheck = (self.hexOffset - 3) == dataSize
+        posDataCheck = (self.hexOffset - self.LastHealtOffset) == dataSize
         healthDataCheck = (self.hexOffset - int(self.hexOffset)) == 0
         if not healthDataCheck or posDataCheck:  # Check for health data
             print("changed")
@@ -107,6 +118,25 @@ class Replay:
         else:
             print("No Health Data Avaliable")
         [print(i) for i in pLifeBarData]
+        return None
+
+    def printPosData(self):
+        printposKeyData = []
+        time = 0
+        if isinstance(self.poskeyData, list):
+            for i in self.poskeyData:
+                if i[0] > 0:
+                    time += i[0]
+                if i[0] == -12345:
+                    self.rngSeed = i[3]
+                    break
+                printposKeyData.append(["Time: {} sec".format(time / 1000),
+                                        "X Position: {}".format(i[1]),
+                                        "Y Position: {}".format(i[2]),
+                                        self.keysDict.get(i[3])])
+        else:
+            print("No Position or Key Data Avaliable")
+        [print(i) for i in printposKeyData]
         return None
 
     def scoreData(self):
@@ -167,7 +197,7 @@ class Replay:
         return self.modsDict.get(self.extractReplayData()[11])
 
     def getLifeBarData(self):
-        graphList = [[1.0, 0]]
+        graphList = []
         self.hexOffset = len(self.replay.hex().split("7c3")[0]) / 2
         for i in self.replay.hex().split("7c"):
             if "2c" or "302e3" in i:
@@ -182,10 +212,14 @@ class Replay:
                     pass
             else:
                 pass
-        self.hexOffset += 3
+        lastOffset = int(self.hexOffset) * 2
+        lastHealth = (self.replay.hex()[lastOffset:lastOffset + 12])
+        self.LastHealtOffset = 1 + len(lastHealth.split("2c")[0]) / 2
+        self.hexOffset += self.LastHealtOffset
         return graphList
 
     def getTime(self):
+        print(self.hexOffset)
         miscData = unpack_from("<qi", self.replay, int(self.hexOffset))
         self.replayLength = miscData[1]
         time = datetime(1, 1, 1) + timedelta(microseconds=miscData[0] / 10)
@@ -202,7 +236,6 @@ class Replay:
             return onlineScoreID[0]
 
     def getPosKeyData(self):
-        print(((self.hexOffset - 3) == len(self.replay.hex()) / 2))
         hexOffset2 = self.hexOffset + self.replayLength
         print(int(self.hexOffset))
         print(int(hexOffset2))
