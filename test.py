@@ -12,12 +12,17 @@ def ReplaySelector(flag):
     except FileNotFoundError:  # If file not found then ask user to select
         osuPath = askdirectory(title="Select osu! Folder")
         chdir(osuPath)
-    else:
-        print("Successfully entered osu! replays directory")
 
     if flag:
-        return askopenfilename(title="Select osu! Replay")
+        replayFile = askopenfilename(title="Select osu! Replay")
+        while replayFile == '':
+            print("Please select valid osu! Replay file", end='\r')
+            replayFile = askopenfilename(title="Select osu! Replay")
+        print("Successfully entered opened osu! replay file")
+        return replayFile
+
     else:
+        print("Successfully entered osu! replays directory")
         listOfFiles = glob(osuPath + "Replays/*.osr")  # All files with .osr
         return max(listOfFiles, key=path.getctime, default=0)
 

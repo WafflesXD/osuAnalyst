@@ -84,7 +84,6 @@ class Replay:
         posDataCheck = (self.hexOffset - self.LastHealtOffset) == dataSize
         healthDataCheck = (self.hexOffset - int(self.hexOffset)) == 0
         if not healthDataCheck or posDataCheck:  # Check for health data
-            print("changed")
             self.hexOffset = 77 + len(self.userName) + calcsize("<hhhhhhihbi")
 
         self.replayDate = "Played on: " + str(self.getTime())
@@ -219,7 +218,6 @@ class Replay:
         return graphList
 
     def getTime(self):
-        print(self.hexOffset)
         miscData = unpack_from("<qi", self.replay, int(self.hexOffset))
         self.replayLength = miscData[1]
         time = datetime(1, 1, 1) + timedelta(microseconds=miscData[0] / 10)
@@ -237,9 +235,6 @@ class Replay:
 
     def getPosKeyData(self):
         hexOffset2 = self.hexOffset + self.replayLength
-        print(int(self.hexOffset))
-        print(int(hexOffset2))
-        print()
         posData = self.replay[int(self.hexOffset): int(hexOffset2)]
         posData = decompress(posData, format=FORMAT_AUTO)
         posData = posData.decode("ascii")  # Pulls mouse + key data
