@@ -89,10 +89,14 @@ class Replay:
         self.replayDate = "Played on: " + str(self.getTime())
         self.onlineScoreID = "Score ID: " + str(self.getOnlineScoreID())
 
-        if not healthDataCheck or not posDataCheck:
-            self.poskeyData = self.getPosKeyData()
-        else:
-            self.poskeyData = "No position or key data avaliable"
+        try:
+            if not healthDataCheck or not posDataCheck:
+                self.poskeyData = self.getPosKeyData()
+            else:
+                raise NameError("No position or key data avaliable")
+        except NameError:
+            print("Ok")
+            
 
     def openReplayFile(self):
         with open(self.replayDir, "rb") as r:  # Opens replay file
